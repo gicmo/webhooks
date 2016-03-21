@@ -563,10 +563,10 @@ type PullRequest struct {
 	Title             string           `json:"title"`
 	User              User             `json:"user"`
 	Body              string           `json:"body"`
-	CreatedAt         time.Time        `json:"created_at"`
-	UpdatedAt         time.Time        `json:"updated_at"`
-	ClosedAt          time.Time        `json:"closed_at"`
-	MergedAt          time.Time        `json:"merged_at"`
+	CreatedAt        *time.Time        `json:"created_at"`
+	UpdatedAt        *time.Time        `json:"updated_at"`
+	ClosedAt         *time.Time        `json:"closed_at"`
+	MergedAt         *time.Time        `json:"merged_at"`
 	MergeCommitSHA    string           `json:"merge_commit_sha"`
 	Assignee          string           `json:"assignee"`
 	Milestone         string           `json:"milestone"`
