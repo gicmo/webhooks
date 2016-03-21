@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"gopkg.in/go-playground/webhooks.v1"
+	"github.com/gicmo/webhooks"
 )
 
 // Webhook instance contains all methods needed to process events
