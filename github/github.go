@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+    "fmt"
 
 	"github.com/gicmo/webhooks"
 )
@@ -129,6 +130,8 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+    var res error
+
 	switch gitHubEvent {
 	case CommitCommentEvent:
 		var cc CommitCommentPayload
@@ -188,8 +191,10 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		hook.runProcessPayloadFunc(fn, p)
 	case PullRequestEvent:
 		var p PullRequestPayload
-		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p)
+		res = json.Unmarshal([]byte(payload), &p)
+        if res == nil {
+		    hook.runProcessPayloadFunc(fn, p)
+        }
 	case PushEvent:
 		var p PushPayload
 		json.Unmarshal([]byte(payload), &p)
@@ -215,6 +220,11 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(payload), &w)
 		hook.runProcessPayloadFunc(fn, w)
 	}
+    
+    if res != nil {
+        data := fmt.Sprintf("500 Internal Server Error - Could not process request: %v", res)
+        http.Error(w, data, http.StatusInternalServerError)
+    }
 }
 
 func (hook Webhook) runProcessPayloadFunc(fn webhooks.ProcessPayloadFunc, results interface{}) {
