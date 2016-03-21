@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"testing"
 	"time"
+    "io/ioutil"
 
 	. "gopkg.in/go-playground/assert.v1"
 	"github.com/gicmo/webhooks"
@@ -3061,10 +3062,12 @@ func TestPullRequestEvent(t *testing.T) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	Equal(t, err, nil)
-
 	defer resp.Body.Close()
-
-	Equal(t, resp.StatusCode, http.StatusOK)
+    
+    if resp.StatusCode != http.StatusOK {
+        body, _ := ioutil.ReadAll(resp.Body)
+        t.Errorf("got %d instead of 200 [%s]", resp.StatusCode, body)
+    }
 }
 
 func TestPushEvent(t *testing.T) {
