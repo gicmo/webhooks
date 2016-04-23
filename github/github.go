@@ -5,9 +5,9 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-    "fmt"
 
 	"github.com/gicmo/webhooks"
 )
@@ -130,7 +130,7 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-    var res error
+	var res error
 
 	switch gitHubEvent {
 	case CommitCommentEvent:
@@ -192,9 +192,9 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	case PullRequestEvent:
 		var p PullRequestPayload
 		res = json.Unmarshal([]byte(payload), &p)
-        if res == nil {
-		    hook.runProcessPayloadFunc(fn, p)
-        }
+		if res == nil {
+			hook.runProcessPayloadFunc(fn, p)
+		}
 	case PushEvent:
 		var p PushPayload
 		json.Unmarshal([]byte(payload), &p)
@@ -209,8 +209,10 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		hook.runProcessPayloadFunc(fn, r)
 	case StatusEvent:
 		var s StatusPayload
-		json.Unmarshal([]byte(payload), &s)
-		hook.runProcessPayloadFunc(fn, s)
+		res = json.Unmarshal([]byte(payload), &s)
+		if res == nil {
+			hook.runProcessPayloadFunc(fn, s)
+		}
 	case TeamAddEvent:
 		var t TeamAddPayload
 		json.Unmarshal([]byte(payload), &t)
@@ -220,11 +222,11 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(payload), &w)
 		hook.runProcessPayloadFunc(fn, w)
 	}
-    
-    if res != nil {
-        data := fmt.Sprintf("500 Internal Server Error - Could not process request: %v", res)
-        http.Error(w, data, http.StatusInternalServerError)
-    }
+
+	if res != nil {
+		data := fmt.Sprintf("500 Internal Server Error - Could not process request: %v", res)
+		http.Error(w, data, http.StatusInternalServerError)
+	}
 }
 
 func (hook Webhook) runProcessPayloadFunc(fn webhooks.ProcessPayloadFunc, results interface{}) {
