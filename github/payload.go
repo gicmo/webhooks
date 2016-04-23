@@ -563,10 +563,10 @@ type PullRequest struct {
 	Title             string           `json:"title"`
 	User              User             `json:"user"`
 	Body              string           `json:"body"`
-	CreatedAt        *time.Time        `json:"created_at"`
-	UpdatedAt        *time.Time        `json:"updated_at"`
-	ClosedAt         *time.Time        `json:"closed_at"`
-	MergedAt         *time.Time        `json:"merged_at"`
+	CreatedAt         *time.Time       `json:"created_at"`
+	UpdatedAt         *time.Time       `json:"updated_at"`
+	ClosedAt          *time.Time       `json:"closed_at"`
+	MergedAt          *time.Time       `json:"merged_at"`
 	MergeCommitSHA    string           `json:"merge_commit_sha"`
 	Assignee          string           `json:"assignee"`
 	Milestone         string           `json:"milestone"`
@@ -691,12 +691,19 @@ type StatusCommitInner struct {
 
 // StatusCommit contains GitHub's status commit information
 type StatusCommit struct {
-	SHA         string            `json:"sha"`
-	Commit      StatusCommitInner `json:"commit"`
-	URL         string            `json:"url"`
-	HTMLURL     string            `json:"html_url"`
-	CommentsURL string            `json:"comments_url"`
-	Author      Author            `json:"author"`
-	Committer   Commiter          `json:"committer"`
-	Parents     []string          `json:"parents"`
+	SHA         string               `json:"sha"`
+	Commit      StatusCommitInner    `json:"commit"`
+	URL         string               `json:"url"`
+	HTMLURL     string               `json:"html_url"`
+	CommentsURL string               `json:"comments_url"`
+	Author      Author               `json:"author"`
+	Committer   Commiter             `json:"committer"`
+	Parents     []StatusCommitParent `json:"parents"`
+}
+
+// StatusParent contains sha1 and link for parent of a commit
+type StatusCommitParent struct {
+	SHA     string `json:"sha"`
+	URL     string `json:"url"`
+	HTMLURL string `json:"html_url"`
 }
